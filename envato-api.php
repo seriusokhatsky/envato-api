@@ -9,6 +9,8 @@
  * Text Domain: envato-api
  */
 
+use SS\Activator;
+use SS\Deactivator;
 use SS\User;
 use SS\PurchaseRepo;
 use SS\API;
@@ -191,6 +193,20 @@ final class SS_Envato_API {
 	}
 
 }
+
+function activate_envato_api() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-envato-api-activator.php';
+	Activator::activate();
+}
+
+function deactivate_envato_api() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-envato-api-deactivator.php';
+	Deactivator::deactivate();
+}
+
+register_activation_hook( __FILE__, 'activate_envato_api' );
+register_deactivation_hook( __FILE__, 'deactivate_envato_api' );
+
 
 function SS_Envato_API() {
 	return SS_Envato_API::instance();

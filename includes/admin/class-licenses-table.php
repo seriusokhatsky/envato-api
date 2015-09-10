@@ -14,6 +14,8 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class LicensesTable extends WP_List_Table {
 
+	public $total_items;
+
 	/** Class constructor */
 	public function __construct() {
 
