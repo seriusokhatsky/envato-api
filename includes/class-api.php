@@ -16,6 +16,9 @@ class API {
 
 	public function __construct( Options $options ) {
 		$this->token = $options->get('token');
+		if( empty($this->token) ) {
+			SS_Envato_API()->notices->add_warning('Please, set up your Envato API token.', true);
+		}
 	}
 
 	public function call($method, $data = array()) {

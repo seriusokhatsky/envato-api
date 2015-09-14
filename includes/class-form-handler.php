@@ -36,21 +36,25 @@ class FormHandler {
 
 			$code = sanitize_text_field( $_POST['ss-envato-license'] );
 
+			$existed = $this->_purchase_repo->is_exists( $code );
 			$purchase_info = $this->_purchase_repo->validate_code( $code );
-
 
 			/*if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 				pr($purchase_info);
 			    die();
 			}*/
-
-			if( $purchase_info ) {
+			if( ! empty( $existed ) && isset( $existed[0]['user_id'] ) ) {
+				$user = get_userdata( $existed[0]['user_id'] );
+				$user_email = ss_hide_mail( $user->user_email );
+				$msg = __('Sorry, this key is already in the database. Registered for email <strong>', ETHEME_DOMAIN) . $user_email . '</strong>';
+				$this->_notices->add_error( $msg );
+			} else if( $purchase_info ) {
 				if( $this->_purchase_repo->add_code( $code, $purchase_info ) ) {
 					// Successfully added
 					$this->_notices->add_success('Successfully added');
 				} else {
 					// Code already exists or something else
-					$this->_notices->add_error('Code already exists or something else');
+					$this->_notices->add_error('Code can not be added to the database');
 				}
 			} else {
 				// Wrong validation code, please try again

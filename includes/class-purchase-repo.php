@@ -60,6 +60,22 @@ class PurchaseRepo {
 		return $this->fetch_purchase_code( $response );
 
 	}
+	
+	public function is_exists( $code ) {
+		global $wpdb;
+		// Check if purchase code is already in the database
+
+		$codes = $wpdb->get_results( $wpdb->prepare( 
+			"
+				SELECT *
+				FROM " . $wpdb->prefix . $this->_table . " 
+				WHERE purchase_code = %s
+			", 
+			$code
+		), ARRAY_A );
+
+		return $codes;
+	}
 
 	public function add_code( $code, $api_response ) {
 		global $wpdb;

@@ -126,10 +126,10 @@ final class SS_Envato_API {
 		do_action( 'before_ss_envato_api_init' );
 
 		// Load class instances
+		$this->notices 			= new Notices();
 		$this->options 			= new Options();
 		$this->purchase_repo 	= new PurchaseRepo( new API( $this->options ) );
 		$this->user 			= new User( $this->purchase_repo );
-		$this->notices 			= new Notices();
 		
 		new FormHandler( $this->purchase_repo, $this->notices );
 
