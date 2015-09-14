@@ -38,3 +38,14 @@ if( ! function_exists( 'ss_verification_form' ) ) {
 	}
 	add_shortcode( 'ss-envato-verifier', 'ss_verification_form' );
 }
+
+if( ! function_exists( 'ss_get_verify_page_id' ) ) {
+	function ss_get_verify_page_id() {
+		global $wpdb;
+	    $results = $wpdb->get_results("SELECT ID FROM $wpdb->posts WHERE post_content LIKE '%[ss-envato-verifier]%'");
+	    if( ! empty( $results ) ) {
+	    	return $results[0]->ID;
+	    } 
+	    return 0;
+	}
+}

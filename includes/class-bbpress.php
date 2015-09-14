@@ -25,7 +25,8 @@ class BBpress {
 		$forum_id = bbp_get_forum_id();
 		if( ! empty( $forum_id ) && ! $this->user->can_create_topic() ) {
 
-			$verify_page = get_permalink( 11 );
+			$verify_page_id = ss_get_verify_page_id();
+			$verify_page = get_permalink( $verify_page_id );
 			$login_page = wp_login_url();
 
 			if( ! $this->user->is_logged() ) {
