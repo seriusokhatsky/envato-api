@@ -29,9 +29,8 @@ class Activator {
 		
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			dbDelta($sql);
-			
 			// Create Default Page
-			/*$post = array(
+			$post = array(
 			  'post_title'    => 'Envato License Verification',
 			  'post_content'  => '[ss-envato-verifier]',
 			  'post_status'   => 'publish',
@@ -40,7 +39,7 @@ class Activator {
 			);
 			
 			// Insert the post into the database
-			wp_insert_post( $post );*/
+			wp_insert_post( $post );
 			
 		} // end table creation
 	}

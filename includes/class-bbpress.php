@@ -24,7 +24,15 @@ class BBpress {
 		// check forum page
 		$forum_id = bbp_get_forum_id();
 		if( ! empty( $forum_id ) && ! $this->user->can_create_topic() ) {
-			wp_redirect( home_url( '/' ) );
+
+			$verify_page = get_permalink( 11 );
+			$login_page = wp_login_url();
+
+			if( ! $this->user->is_logged() ) {
+				wp_redirect( $login_page ); die();
+			}
+
+			wp_redirect( $verify_page );
 			die();
 		} 
 	}

@@ -21,3 +21,20 @@ if( ! function_exists( 'ss_hide_mail' ) ) {
 	    return implode("@", $mail_segments);
 	}
 }
+
+if( ! function_exists( 'ss_verification_form' ) ) {
+	function ss_verification_form() {
+
+		ob_start();
+
+		ss_purchase_code_form();
+
+		$out = ob_get_contents();
+		ob_clean();
+
+		return $out;
+
+
+	}
+	add_shortcode( 'ss-envato-verifier', 'ss_verification_form' );
+}

@@ -135,7 +135,7 @@ class PurchaseRepo {
 									'id' 						=> $data['item']['id'],
 									'name' 						=> $data['item']['name'],
 									'number_of_sales' 			=> $data['item']['number_of_sales'],
-									'wordpress_theme_metadata' 	=> $data['item']['wordpress_theme_metadata'],
+									'wordpress_theme_metadata' 	=> @$data['item']['wordpress_theme_metadata'],
 								),
 			'license' 			=> $data['license'],
 			'support_amount' 	=> $data['support_amount'],
