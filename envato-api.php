@@ -16,6 +16,7 @@ use SS\PurchaseRepo;
 use SS\API;
 use SS\Options;
 use SS\Notices;
+use SS\BBpress;
 use SS\FormHandler;
 use SSAdmin\Admin;
 
@@ -88,6 +89,7 @@ final class SS_Envato_API {
 		include_once( 'includes/class-options.php' );
 		include_once( 'includes/class-purchase-repo.php' );
 		include_once( 'includes/class-user.php' );
+		include_once( 'includes/class-bbpress.php' );
 		include_once( 'includes/class-form-handler.php' );
 		
 
@@ -130,6 +132,8 @@ final class SS_Envato_API {
 		$this->options 			= new Options();
 		$this->purchase_repo 	= new PurchaseRepo( new API( $this->options ) );
 		$this->user 			= new User( $this->purchase_repo );
+
+		new BBpress( $this->user );
 		
 		new FormHandler( $this->purchase_repo, $this->notices );
 
