@@ -35,9 +35,39 @@ class PurchaseRepo {
 			",
 	        	$this->get_user_id()
         );
-
+		
 		return $wpdb->get_results( $sql );
 
+	}
+
+	public function get_user_codes() {
+		global $wpdb;
+
+		$sql = $wpdb->prepare( 
+			"
+	        SELECT * FROM " . $wpdb->prefix . $this->_table . "
+			WHERE user_id=%d
+			",
+	        	$this->get_user_id()
+        );
+
+		return $wpdb->get_results( $sql, ARRAY_A );
+	}
+
+	public function get_user_envato_ids() {
+		global $wpdb;
+
+		$codes = $this->get_user_codes();
+
+		if( empty($codes) ) return false;
+
+		$result = array();
+
+		foreach ($codes as $code) {
+			$result[] = $code['envato_id'];
+		}
+
+		return $result;
 	}
 
 	public function get_envato_item_ids() {
@@ -77,8 +107,13 @@ class PurchaseRepo {
 		return $codes;
 	}
 
-	public function add_code( $code, $api_response ) {
+	public function add_code( $code, $api_response, $user_id = false ) {
 		global $wpdb;
+
+		if( ! $user_id) {
+			$user_id = $this->get_user_id();
+		}
+		
 		// Insert code to the database
 		return $wpdb->insert( 
 			$wpdb->prefix . $this->_table,
@@ -86,7 +121,7 @@ class PurchaseRepo {
 				'envato_id' 		=> $api_response['item']['id'], 
 				'purchase_code' 	=> $code,
 				'status' 			=> 'valid',
-				'user_id' 			=> $this->get_user_id(),
+				'user_id' 			=> $user_id,
 				'api_response' 		=> $api_response['raw_response'],
 				'support_amount' 	=> $api_response['support_amount'],
 				'supported_until' 	=> $api_response['supported_until'],

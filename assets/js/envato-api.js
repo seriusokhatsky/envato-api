@@ -9,16 +9,19 @@
 
         purchaseForm: function() {
 
-            var form = $('#ss-envato-verify-form');
+            var form = $('#ss-envato-verify-form'),
+                loading = false;
 
             form.submit(function(e) {
                 e.preventDefault();
 
+                if( loading || $(this).find('#ss-envato-license').val() == '' ) return;
+
+                loading = true;
+
                 form.find('.msgs-list').remove();
 
                 form.addClass('loading-ajax');
-
-                if($(this).find('#ss-envato-license').val() == '') return;
 
                 var data = $(this).serialize();
 
@@ -38,6 +41,7 @@
                     },
                     complete: function(r) {
                         form.removeClass('loading-ajax');
+                        loading = false;
                         console.log('complete');
                     },
                 });

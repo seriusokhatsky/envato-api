@@ -32,8 +32,8 @@ class User {
 
 	}
 
-	public function has_support() {		
-
+	public function has_support( $user_id = false ) {		
+ 
 		// Not logged in users don't have support
 		if( ! $this->is_logged() ) {
 			return false;

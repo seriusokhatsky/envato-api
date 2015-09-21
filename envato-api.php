@@ -33,6 +33,7 @@ final class SS_Envato_API {
 	public $user;
 	public $options;
 	public $notices;
+	public $bbpress;
 
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -96,11 +97,15 @@ final class SS_Envato_API {
 		if ( is_admin() ) {
 			include_once( 'includes/admin/class-admin.php' );
 			include_once( 'includes/admin/class-meta.php' );
-			include_once( 'includes/admin/class-options.php' );
 			include_once( 'includes/admin/class-licenses-table.php' );
 			include_once( 'includes/admin/class-licenses-page.php' );
 			include_once( 'includes/admin/class-verification-page.php' );
+			include_once( 'includes/admin/class-downloads-page.php' );
 		}
+		
+		$this->notices 			= new Notices();
+		$this->options 			= new Options();
+		$this->options->redux_init();
 
 		if ( defined( 'DOING_AJAX' ) ) {
 			$this->ajax_includes();
@@ -128,12 +133,12 @@ final class SS_Envato_API {
 		do_action( 'before_ss_envato_api_init' );
 
 		// Load class instances
-		$this->notices 			= new Notices();
-		$this->options 			= new Options();
-		$this->purchase_repo 	= new PurchaseRepo( new API( $this->options ) );
+		// 
+		
+		$this->api 				= new API( $this->options );
+		$this->purchase_repo 	= new PurchaseRepo( $this->api  );
 		$this->user 			= new User( $this->purchase_repo );
-
-		new BBpress( $this->user );
+		$this->bbpress		    = new BBpress( $this->user, $this->purchase_repo, $this->options );
 		
 		new FormHandler( $this->purchase_repo, $this->notices );
 

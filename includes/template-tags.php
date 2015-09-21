@@ -17,3 +17,27 @@ if( ! function_exists( 'ss_purchase_code_form' ) ) {
 		<?php
 	}
 }
+
+if( ! function_exists( 'ss_show_purchase_codes' ) ) {
+	function ss_show_purchase_codes() {
+	?>
+		<div class="themes-from-themeforest">
+	        <?php
+
+	        	$codes = SS_Envato_API()->purchase_repo->get_user_codes();
+	        	//pr($codes);
+	        	if(count($codes) > 0) {
+	        		?>
+						<h4><?php _e('Your Purchase Codes', 'ss-envato-api'); ?></h4>
+	        		<?php
+	        		for ($i=0; $i < count($codes); $i++) { 
+	        			$return = json_decode($codes[$i]['api_response'], true);
+	        			echo '<div class="envato-license">' . $return['item']['name'] . '<br>';
+	        			echo 'code: <strong>' . $codes[$i]['purchase_code'] . '</strong></div>';
+	        		}
+	        	}
+	        ?>
+        </div>
+	<?php
+	}
+}

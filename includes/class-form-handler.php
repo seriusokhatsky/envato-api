@@ -52,6 +52,10 @@ class FormHandler {
 				if( $this->_purchase_repo->add_code( $code, $purchase_info ) ) {
 					// Successfully added
 					$this->_notices->add_success('Successfully added, now you can visit our forum');
+
+					if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+						$this->_notices->add_success('Page will be reloaded in 5 seconds.<script type="text/javascript">setTimeout(function() { window.location.reload(); }, 5000)</script>');
+					}
 				} else {
 					// Code already exists or something else
 					$this->_notices->add_error('Code can not be added to the database');

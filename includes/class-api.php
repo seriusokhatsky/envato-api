@@ -10,7 +10,9 @@ class API {
 
 	public $token = '';
 
-	public $base_url = 'https://api.envato.com/v2/market';
+	public $base_url = 'https://api.envato.com/%s/market';
+
+	public $api_ver = 'v2';
 
 	public $url = '';
 
@@ -21,7 +23,9 @@ class API {
 		}
 	}
 
-	public function call($method, $data = array()) {
+	public function call($method, $data = array(), $api_ver = 'v2') {
+		
+		$this->api_ver = $api_ver;
 
 		$response = wp_remote_get( $this->get_url($method, $data), array(
 		    'headers'     => $this->get_headers(),
@@ -38,7 +42,7 @@ class API {
 	}
 
 	public function get_url( $method, $args = array() ) {
-		$this->url = $this->base_url;
+		$this->url = str_replace('%s', $this->api_ver, $this->base_url);
 
 		$this->url .= $method;
 
