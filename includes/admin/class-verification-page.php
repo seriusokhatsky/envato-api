@@ -57,7 +57,7 @@ class VerificationPage {
 			if(empty($code)) return;
 
 			$response = $this->purchase->validate_code( $code );
-			//var_dump($response);
+
 			if( $response ) {
 				$message = '<strong>Item:</strong> ' . $response['item']['name'];
 				$message .= '<br><strong>Buyer:</strong> ' . $response['buyer'];

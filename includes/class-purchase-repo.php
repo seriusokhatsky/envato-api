@@ -11,7 +11,7 @@ class PurchaseRepo {
 	private $_user_id = 0;
 	private $_api;
 	private $_item_id;
-	private $_purchases;
+	private $_purchases = array();
 	private $_table = 'ss_purchase_codes';
 
 	public function __construct(API $api) {
@@ -20,24 +20,42 @@ class PurchaseRepo {
 
 	public function load_purchases( $item_ids = 0 ) {
 		global $wpdb;
-		// Get purchase codes from database
-		$this->_purchases = array();
-			
-		if( empty( $item_ids ) ) {
-			$item_ids = $this->get_envato_item_ids();
-		}
 
-		$sql = $wpdb->prepare( 
-			"
-	        SELECT * FROM " . $wpdb->prefix . $this->_table . "
-			WHERE envato_id IN ($item_ids)
-			AND user_id=%d
-			",
-	        	$this->get_user_id()
-        );
-		
-		return $wpdb->get_results( $sql );
+		if( empty( $this->_purchases ) ) {
+			// Get purchase codes from database
+			$this->_purchases = array();
+				
+			if( empty( $item_ids ) ) {
+				$item_ids = $this->get_envato_item_ids();
+			}
 
+			$sql = $wpdb->prepare( 
+				"
+		        SELECT * FROM " . $wpdb->prefix . $this->_table . "
+				WHERE envato_id IN ($item_ids)
+				AND user_id=%d
+				",
+				$this->get_user_id()
+	        );
+
+	        $this->_purchases = $wpdb->get_results( $sql );
+
+		}	
+
+		return $this->_purchases;
+
+	}
+
+	public function get_expired_purchases() {
+		$purchases = $this->load_purchases();
+
+		$expired_purchases = array();
+
+		$expired_purchases = array_filter( $purchases, function( $code ) {
+			return ss_is_date_expired( $code->supported_until );
+		});
+
+		return $expired_purchases;
 	}
 
 	public function get_user_codes() {
@@ -129,6 +147,38 @@ class PurchaseRepo {
 		);
 	}
 
+	public function update_code( $code, $api_response, $user_id = false ) {
+		global $wpdb;
+		
+		// Insert code to the database
+		return $wpdb->update( 
+			$wpdb->prefix . $this->_table, 
+			array( 
+				'envato_id' 		=> $api_response['item']['id'], 
+				'status' 			=> 'valid',
+				'api_response' 		=> $api_response['raw_response'],
+				'support_amount' 	=> $api_response['support_amount'],
+				'supported_until' 	=> $api_response['supported_until'],
+			), 
+			array( 'purchase_code' => $code ), 
+			array( 
+				'%d',	
+				'%s',	
+				'%s',
+				'%s',	
+				'%s',	
+			), 
+			array( '%s' ) 
+		);
+	}
+
+	public function delete_code( $id ) {
+		global $wpdb;
+		
+		// Insert code to the database
+		return $wpdb->delete( $wpdb->prefix . $this->_table, array( 'id' => $id ) );
+	}
+
 	public function is_active_support() {
 		global $wpdb;
 		// Is active support for item by ID
@@ -136,11 +186,22 @@ class PurchaseRepo {
 		$result = false; 
 
 		$purchases = $this->load_purchases();
+		$licenses = $this->get_on_site_licenses();
 
 		if( ! empty( $purchases ) ) {
 			foreach ($purchases as $code) {
 				if( $result ) continue;
 				if( ! ss_is_date_expired( $code->supported_until ) ) {
+					$result = true;
+				}
+			}
+		}
+
+		if( function_exists('bbp_get_forum_id') && ! empty( $licenses ) ) {
+			$forum_id = bbp_get_forum_id();
+			if( ! empty( $forum_id ) ) {
+			 	$forum_licenses = explode(',', get_post_meta( $forum_id, '_ss_onsite_items', true ));
+				if( array_intersect($licenses, $forum_licenses) ) {
 					$result = true;
 				}
 			}
@@ -181,4 +242,48 @@ class PurchaseRepo {
 
 		return $return;
 	}
+
+	public function get_on_site_licenses() {
+		$licenses = array();
+		$codes = $this->get_on_site_licenses_list();
+		if(count($codes) > 0) {
+			for ($i=0; $i < count($codes); $i++) { 
+				$licenses[] = $codes[$i]['software_product_id'];
+			}
+		}
+		return $licenses;
+	}
+
+	public function get_on_site_licenses_list() {
+		global $wpdb;
+
+		$args = array(
+			'meta_key' => '_customer_user',
+			'meta_value' => $this->get_user_id(),
+			'post_type' => 'shop_order',
+			'post_status' => 'publish',
+			'tax_query'=>array(
+				array(
+					'taxonomy' =>'shop_order_status',
+					'field' => 'slug',
+					'terms' => 'completed'
+				)
+			)
+		);
+
+	    $posts = get_posts($args);
+	    //get the post ids as order ids
+	    $orders = wp_list_pluck( $posts, 'ID' );
+
+	    if( ! empty( $orders ) ) {
+			$ids = join(',',$orders); 
+		
+			$data = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".$wpdb->prefix."woocommerce_software_licences WHERE `order_id` IN (".$ids.")", $user_search), ARRAY_A);
+	    } else {
+	    	$data = array();
+	    }
+
+		return $data;
+	}
+
 }

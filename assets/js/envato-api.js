@@ -5,6 +5,77 @@
     var envatoAPI = {
         init: function() {
             this.purchaseForm();
+            this.updatePurchaseAction();
+            this.deletePurchaseAction();
+        },
+
+        updatePurchaseAction: function() {
+            $('body').on('click', '.ss-update-code-btn', function(e) {
+                e.preventDefault();
+
+                var $btn = $(this),
+                    code = $btn.data('code');
+
+                if( $btn.hasClass('ss-loading') ) return;
+
+                $btn.addClass('ss-loading');
+
+                $.ajax({
+                    url: ss_envato.ajax_url,
+                    method: 'get',
+                    data: {
+                        action: 'ss_update_purchas_code',
+                        code: code
+                    },
+                    success: function(r) {
+                        $('.ss-update-codes').prepend(r);
+                    },
+                    error: function() {
+                        console.log('error');
+                    },
+                    complete: function(r) {
+                        $btn.removeClass('ss-loading');
+                        console.log('complete');
+                    },
+                });
+
+
+            });
+        },
+
+        deletePurchaseAction: function() {
+            $('body').on('click', '.remove-purchase-code', function(e) {
+                e.preventDefault();
+
+                var $btn = $(this),
+                    id = $btn.data('id');
+
+                if( $btn.hasClass('ss-loading') ) return;
+
+                $btn.addClass('ss-loading');
+
+                $.ajax({
+                    url: ss_envato.ajax_url,
+                    method: 'get',
+                    data: {
+                        action: 'ss_delete_purchase_code',
+                        id: id
+                    },
+                    success: function(r) {
+                        $btn.parent().before(r);
+                        $btn.parent().hide();
+                    },
+                    error: function() {
+                        console.log('error');
+                    },
+                    complete: function(r) {
+                        $btn.removeClass('ss-loading');
+                        console.log('complete');
+                    },
+                });
+
+
+            });
         },
 
         purchaseForm: function() {

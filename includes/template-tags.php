@@ -33,7 +33,8 @@ if( ! function_exists( 'ss_show_purchase_codes' ) ) {
 	        		for ($i=0; $i < count($codes); $i++) { 
 	        			$return = json_decode($codes[$i]['api_response'], true);
 	        			echo '<div class="envato-license">' . $return['item']['name'] . '<br>';
-	        			echo 'code: <strong>' . $codes[$i]['purchase_code'] . '</strong></div>';
+	        			echo 'code: <strong>' . $codes[$i]['purchase_code'] . '</strong>';
+	        			echo '<br><a href="#" class="remove-purchase-code" data-id="' . $codes[$i]['id'] . '">remove</a></div>';
 	        		}
 	        	}
 	        ?>

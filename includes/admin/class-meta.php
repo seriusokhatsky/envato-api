@@ -33,6 +33,12 @@ class Meta {
 	        'id'         => $prefix . 'envato_items',
 	        'type'       => 'text'
 	    ) );
+
+	    $cmb->add_field( array(
+	        'name'       => __( 'Onsite license keys', 'cmb2' ),
+	        'id'         => $prefix . 'onsite_items',
+	        'type'       => 'text'
+	    ) );
 	}
 
 }

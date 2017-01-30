@@ -29,7 +29,6 @@ class User {
 			
 			$this->set_staff();
 		}
-
 	}
 
 	public function has_support( $user_id = false ) {		
@@ -44,7 +43,7 @@ class User {
 			return true;
 		}
 
-		return false;
+		return false; // TODO: remove true and place FALSE
 	}
 
 	public function can_create_topic() {
